@@ -12,8 +12,8 @@
         </option>
       </select>
       <span v-if="showSelectYear" class="mx-4">
-      Sur l'année :
-    </span>
+          Sur l'année :
+      </span>
       <select
         v-if="showSelectYear"
         v-model="selectedYear"
