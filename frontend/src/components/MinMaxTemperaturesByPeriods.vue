@@ -29,7 +29,6 @@
       :chart-data="chartData"
     />
   </div>
-
 </template>
 
 <script>
