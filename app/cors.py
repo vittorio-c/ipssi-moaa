@@ -1,7 +1,7 @@
 import os
 
-from main import app
 from flask_cors import CORS
+from main import app
 
 
 def setup_cors():

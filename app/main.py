@@ -1,9 +1,8 @@
 import datetime
-from dateutil.relativedelta import relativedelta
-
-from flask import Flask, jsonify, render_template, request
 
 from database.connection import mariabdb_client
+from dateutil.relativedelta import relativedelta
+from flask import Flask, jsonify, render_template, request
 
 app = Flask(__name__)
 
@@ -31,16 +30,17 @@ def geo_by_year(year):
     mycursor.execute("SELECT DISTINCT year FROM grouped_by_year_by_stations")
     available_years = mycursor.fetchall()
 
-    out = {"_data": [], "_meta": {
-        "distinct_years": [year[0] for year in available_years]
-    }}
+    out = {
+        "_data": [],
+        "_meta": {"distinct_years": [year[0] for year in available_years]},
+    }
     for (station_id, year, mean_tmp, latitude, longitude) in stations:
         record = {
             "station_id": station_id,
             "year": year,
             "mean_tmp": mean_tmp,
             "latitude": latitude,
-            "longitude": longitude
+            "longitude": longitude,
         }
         out["_data"].append(record)
 
@@ -56,9 +56,10 @@ def mean_by_year():
     mycursor.execute("SELECT DISTINCT year FROM mean_temperatures_by_year")
     available_years = mycursor.fetchall()
 
-    out = {"_data": [], "_meta": {
-        "distinct_years": [year[0] for year in available_years]
-    }}
+    out = {
+        "_data": [],
+        "_meta": {"distinct_years": [year[0] for year in available_years]},
+    }
     for (year, mean_tmp) in temperatures:
         record = {
             "date": year,
@@ -70,13 +71,13 @@ def mean_by_year():
 
 
 @app.route("/api/tmp/by-month/<year>")
-@app.route("/api/tmp/by-month/", defaults={'year': None})
+@app.route("/api/tmp/by-month/", defaults={"year": None})
 def mean_by_month(year):
     mycursor = mariabdb_client.cursor()
     sql = "SELECT * FROM mean_temperatures_by_month"
 
     if year:
-        sql += f' WHERE year = \'{year}\''
+        sql += f" WHERE year = '{year}'"
 
     mycursor.execute(sql)
 
@@ -84,9 +85,10 @@ def mean_by_month(year):
     mycursor.execute("SELECT DISTINCT year FROM mean_temperatures_by_month")
     available_years = mycursor.fetchall()
 
-    out = {"_data": [], "_meta": {
-        "distinct_years": [year[0] for year in available_years]
-    }}
+    out = {
+        "_data": [],
+        "_meta": {"distinct_years": [year[0] for year in available_years]},
+    }
     for (year, month, mean_tmp) in temperatures:
         record = {
             "date": f"{month}-{year}",
@@ -98,16 +100,16 @@ def mean_by_month(year):
 
 
 @app.route("/api/tmp/by-day/<year>")
-@app.route("/api/tmp/by-day/", defaults={'year': None})
+@app.route("/api/tmp/by-day/", defaults={"year": None})
 def mean_by_day(year):
     mycursor = mariabdb_client.cursor()
     sql = "SELECT * FROM mean_temperatures_by_day"
 
     if year:
-        sql += f' WHERE YEAR(date) = \'{year}\''
+        sql += f" WHERE YEAR(date) = '{year}'"
     else:
         one_year_ago = datetime.date.today() - relativedelta(years=5)
-        sql += f' WHERE date > \'{one_year_ago}\''
+        sql += f" WHERE date > '{one_year_ago}'"
 
     mycursor.execute(sql)
 
@@ -115,9 +117,10 @@ def mean_by_day(year):
     mycursor.execute("SELECT DISTINCT YEAR(date) FROM mean_temperatures_by_day")
     available_years = mycursor.fetchall()
 
-    out = {"_data": [], "_meta": {
-        "distinct_years": [year[0] for year in available_years]
-    }}
+    out = {
+        "_data": [],
+        "_meta": {"distinct_years": [year[0] for year in available_years]},
+    }
     for (date, mean_tmp) in temperatures:
         record = {
             "date": date.strftime("%m/%d/%Y"),
@@ -137,9 +140,10 @@ def mean_by_season():
     mycursor.execute("SELECT DISTINCT year FROM mean_temperatures_by_season")
     available_years = mycursor.fetchall()
 
-    out = {"_data": [], "_meta": {
-        "distinct_years": [year[0] for year in available_years]
-    }}
+    out = {
+        "_data": [],
+        "_meta": {"distinct_years": [year[0] for year in available_years]},
+    }
     for (year, season, mean_tmp) in temperatures:
         record = {
             "date": f"{season} {year}",
@@ -159,9 +163,10 @@ def min_max_by_season():
     mycursor.execute("SELECT DISTINCT year FROM min_max_temperatures_by_season")
     available_years = mycursor.fetchall()
 
-    out = {"_data": [], "_meta": {
-        "distinct_years": [year[0] for year in available_years]
-    }}
+    out = {
+        "_data": [],
+        "_meta": {"distinct_years": [year[0] for year in available_years]},
+    }
     for (year, season, min_tmp, max_tmp) in temperatures:
         record = {
             "date": f"{season} {year}",
@@ -174,16 +179,16 @@ def min_max_by_season():
 
 
 @app.route("/api/min-max/by-day/<year>")
-@app.route("/api/min-max/by-day/", defaults={'year': None})
+@app.route("/api/min-max/by-day/", defaults={"year": None})
 def min_max_by_day(year):
     mycursor = mariabdb_client.cursor()
     sql = "SELECT * FROM min_max_temperatures_by_day"
 
     if year:
-        sql += f' WHERE YEAR(date) = \'{year}\''
+        sql += f" WHERE YEAR(date) = '{year}'"
     else:
         one_year_ago = datetime.date.today() - relativedelta(years=5)
-        sql += f' WHERE date > \'{one_year_ago}\''
+        sql += f" WHERE date > '{one_year_ago}'"
 
     mycursor.execute(sql)
 
@@ -191,9 +196,10 @@ def min_max_by_day(year):
     mycursor.execute("SELECT DISTINCT YEAR(date) FROM min_max_temperatures_by_day")
     available_years = mycursor.fetchall()
 
-    out = {"_data": [], "_meta": {
-        "distinct_years": [year[0] for year in available_years]
-    }}
+    out = {
+        "_data": [],
+        "_meta": {"distinct_years": [year[0] for year in available_years]},
+    }
     for (date, min_tmp, max_tmp) in temperatures:
         record = {
             "date": date.strftime("%m/%d/%Y"),
@@ -206,13 +212,13 @@ def min_max_by_day(year):
 
 
 @app.route("/api/min-max/by-month/<year>")
-@app.route("/api/min-max/by-month/", defaults={'year': None})
+@app.route("/api/min-max/by-month/", defaults={"year": None})
 def min_max_by_month(year):
     mycursor = mariabdb_client.cursor()
     sql = "SELECT * FROM min_max_temperatures_by_month"
 
     if year:
-        sql += f' WHERE year = \'{year}\''
+        sql += f" WHERE year = '{year}'"
 
     mycursor.execute(sql)
 
@@ -220,9 +226,10 @@ def min_max_by_month(year):
     mycursor.execute("SELECT DISTINCT year FROM min_max_temperatures_by_month")
     available_years = mycursor.fetchall()
 
-    out = {"_data": [], "_meta": {
-        "distinct_years": [year[0] for year in available_years]
-    }}
+    out = {
+        "_data": [],
+        "_meta": {"distinct_years": [year[0] for year in available_years]},
+    }
     for (year, month, min_tmp, max_tmp) in temperatures:
         record = {
             "date": f"{month}-{year}",
@@ -243,9 +250,10 @@ def min_max_by_year():
     mycursor.execute("SELECT DISTINCT year FROM min_max_temperatures_by_year")
     available_years = mycursor.fetchall()
 
-    out = {"_data": [], "_meta": {
-        "distinct_years": [year[0] for year in available_years]
-    }}
+    out = {
+        "_data": [],
+        "_meta": {"distinct_years": [year[0] for year in available_years]},
+    }
     for (year, min_tmp, max_tmp) in temperatures:
         record = {
             "date": year,
@@ -255,4 +263,3 @@ def min_max_by_year():
         out["_data"].append(record)
 
     return jsonify(out)
-
